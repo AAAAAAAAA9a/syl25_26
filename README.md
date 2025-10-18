@@ -1,7 +1,3 @@
-# SYLWESTER z Jagiellońska – 2025/2026
-
-Statyczna strona zbudowana w HTML + Tailwind CSS + vanilla JS. Strona wyświetla wspólną listę uczestników oraz pozwala w prosty sposób dopisać się do listy bez potrzeby stawiania serwera.
-
 ## Wspólna lista
 
 - Lista uczestników przechowywana jest w publicznym dokumencie JSON na `jsonblob.com`.
@@ -17,7 +13,3 @@ Statyczna strona zbudowana w HTML + Tailwind CSS + vanilla JS. Strona wyświetla
   ```
 
   W odpowiedzi nagłówek `Location` wskaże nowy adres. Podmień go w `index.html` w stałej `DATA_URL`.
-
-## Uruchomienie lokalne
-
-Strona jest w pełni statyczna – wystarczy otworzyć `index.html` w przeglądarce lub udostępnić ją na GitHub Pages.
