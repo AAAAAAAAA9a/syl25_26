@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sylwester z Jagiellońską • 2025/2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["'Poppins'", "system-ui", "sans-serif"],
+              body: ["'Inter'", "system-ui", "sans-serif"],
+            },
+            colors: {
+              midnight: "#0b1120",
+              accent: "#fcd34d",
+              accentPink: "#f472b6",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-midnight font-body text-slate-100 antialiased">
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16 sm:px-10 lg:px-16"
+    >
+      <div
+        class="absolute left-[-20%] top-[-20%] h-96 w-96 rounded-full bg-gradient-to-br from-accent to-accentPink opacity-20 blur-[120px]"
+        aria-hidden="true"
+      ></div>
+      <div
+        class="absolute bottom-[-40%] right-[-10%] h-[28rem] w-[28rem] rounded-full bg-gradient-to-tr from-indigo-600 via-blue-500 to-violet-500 opacity-20 blur-[160px]"
+        aria-hidden="true"
+      ></div>
+
+      <div
+        class="relative mx-auto w-full max-w-4xl space-y-10 rounded-[2.5rem] border border-white/10 bg-white/5 p-12 shadow-[0_35px_120px_-45px_rgba(12,19,38,0.9)] backdrop-blur-2xl sm:p-16"
+      >
+        <header class="space-y-4 text-center">
+          <h1
+            class="font-display inline-block pb-2 text-4xl font-semibold leading-[1.15] text-transparent sm:text-5xl lg:text-6xl"
+            style="
+              background-image: linear-gradient(120deg, #fcd34d 0%, #f472b6 45%, #60a5fa 90%);
+              background-clip: text;
+              -webkit-background-clip: text;
+            "
+          >
+            Sylwester z Jagiellońską
+          </h1>
+          <p class="font-display text-2xl font-semibold tracking-[0.35em] text-slate-100/70">
+            2025/2026
+          </p>
+        </header>
+
+        <section class="space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-100/90">
+              Lista gości
+            </h2>
+            <span
+              id="list-count"
+              class="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-slate-200/70"
+            >
+              0 osób
+            </span>
+          </div>
+
+          <ul
+            id="attendee-list"
+            class="rounded-2xl divide-y divide-white/10"
+            aria-live="polite"
+            aria-relevant="all"
+          ></ul>
+
+          <p id="status" class="text-sm text-accent"></p>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const DATA_URL = "https://jsonblob.com/api/jsonBlob/1429230376525684736";
+      let people = [];
+      let isMutating = false;
+
+      const listEl = document.getElementById("attendee-list");
+      const countEl = document.getElementById("list-count");
+      const statusEl = document.getElementById("status");
+
+      // Helpers for minimal avatars (initials + deterministic color)
+      const getInitials = (fullName) => {
+        const parts = String(fullName).trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return "?";
+        if (parts.length === 1) {
+          const word = parts[0];
+          return (word[0] + (word[1] || "")).toUpperCase();
+        }
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      };
+
+      const stringToHsl = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash) % 360;
+        return `hsl(${hue} 70% 65%)`;
+      };
+
+      const renderList = () => {
+        listEl.innerHTML = "";
+
+        people.forEach((name, index) => {
+          const item = document.createElement("li");
+          // Unified row inside a single list container
+          item.className =
+            "group flex items-center justify-between gap-4 px-4 py-3 transition hover:bg-white/5";
+
+          const left = document.createElement("div");
+          left.className = "flex items-center gap-3";
+
+          const avatar = document.createElement("div");
+          avatar.className =
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-slate-900";
+          avatar.style.backgroundColor = stringToHsl(name);
+          avatar.textContent = getInitials(name);
+
+          const nameEl = document.createElement("span");
+          nameEl.className = "text-base font-medium text-slate-100";
+          nameEl.textContent = name;
+
+          left.append(avatar, nameEl);
+          item.append(left);
+
+          const removeButton = document.createElement("button");
+          removeButton.type = "button";
+          removeButton.className =
+            "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium tracking-wide text-slate-300 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-300/40 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity";
+          removeButton.innerHTML =
+            '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span class="sr-only">Usuń</span>';
+          removeButton.addEventListener("click", async () => {
+            removeButton.disabled = true;
+            removeButton.setAttribute("aria-disabled", "true");
+            isMutating = true;
+            try {
+              const nextPeople = people.filter((_, idx) => idx !== index);
+              const response = await fetch(DATA_URL, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ people: nextPeople }),
+              });
+              if (!response.ok) {
+                throw new Error("Błąd sieci");
+              }
+              people = nextPeople;
+              renderList();
+              statusEl.textContent = "";
+            } catch (error) {
+              statusEl.textContent =
+                "Nie udało się usunąć wpisu. Odśwież stronę i spróbuj ponownie.";
+              removeButton.disabled = false;
+              removeButton.removeAttribute("aria-disabled");
+            } finally {
+              isMutating = false;
+            }
+          });
+
+          item.append(removeButton);
+          listEl.append(item);
+        });
+
+        const formItem = document.createElement("li");
+        formItem.className = "px-5 py-5";
+
+        const form = document.createElement("form");
+        form.className = "flex flex-col gap-3 sm:flex-row sm:items-end";
+        form.setAttribute("aria-label", "Dodaj gościa");
+
+        const inputWrapper = document.createElement("div");
+        inputWrapper.className = "flex-1";
+
+        const label = document.createElement("label");
+        label.htmlFor = "name-input";
+        // Keep for accessibility but visually hide
+        label.className = "sr-only";
+        label.textContent = "Imię i nazwisko";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "name";
+        input.required = true;
+        input.placeholder = "Imię i nazwisko";
+        input.autocomplete = "name";
+        input.setAttribute("aria-label", "Imię i nazwisko nowej osoby na liście");
+        input.id = "name-input";
+        input.className =
+          "w-full rounded-xl border border-white/10 bg-white/90 px-4 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-500 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/60";
+
+        inputWrapper.append(label, input);
+
+        const button = document.createElement("button");
+        button.type = "submit";
+        button.className =
+          "inline-flex items-center justify-center rounded-xl bg-slate-200 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-50";
+        button.textContent = "Dodaj";
+        button.disabled = true;
+
+        form.append(inputWrapper, button);
+        formItem.append(form);
+        listEl.append(formItem);
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const formData = new FormData(form);
+          const name = formData.get("name");
+          if (!name) {
+            return;
+          }
+
+          button.disabled = true;
+          const prevText = button.textContent;
+          button.textContent = "Dodaję...";
+          isMutating = true;
+
+          try {
+            const nextPeople = [...people, String(name).trim()].filter(Boolean);
+            const response = await fetch(DATA_URL, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ people: nextPeople }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Błąd sieci");
+            }
+
+            people = nextPeople;
+            renderList();
+            statusEl.textContent = "";
+            input.value = "";
+          } catch (error) {
+            statusEl.textContent =
+              "Nie udało się zapisać. Odśwież stronę i spróbuj ponownie.";
+            button.disabled = false;
+            button.textContent = prevText;
+          } finally {
+            isMutating = false;
+          }
+        });
+
+        // Enable/disable button based on trimmed input value
+        input.addEventListener("input", () => {
+          const hasValue = input.value.trim().length > 0;
+          button.disabled = !hasValue;
+        });
+
+        countEl.textContent =
+          people.length === 1
+            ? "1 osoba"
+            : `${people.length} ${people.length % 10 === 1 && people.length !== 11 ? "osoba" : people.length % 10 >= 2 && people.length % 10 <= 4 && (people.length < 10 || people.length > 20) ? "osoby" : "osób"}`;
+      };
+
+      const fetchPeople = async () => {
+        if (isMutating) {
+          return;
+        }
+        try {
+          const response = await fetch(DATA_URL, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error("Nie udało się pobrać listy");
+          }
+          const data = await response.json();
+          people = Array.isArray(data.people) ? data.people : [];
+          renderList();
+        } catch (error) {
+          statusEl.textContent =
+            "Nie udało się pobrać listy. Spróbuj odświeżyć stronę.";
+          people = [];
+          renderList();
+        }
+      };
+
+      fetchPeople();
+      setInterval(fetchPeople, 15000);
+    </script>
+  </body>
+</html>
