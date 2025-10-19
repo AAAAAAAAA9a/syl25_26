@@ -684,7 +684,7 @@ class Shell {
       launchVelocity * (this.horsetail ? 100 : 400)
     );
     comet.heavy = true;
-    comet.spinRadius = (MyMath && MyMath.random ? MyMath.random(0.32, 0.85) : (0.32 + Math.random() * (0.85 - 0.32)));
+    comet.spinRadius = 0.32 + Math.random() * (0.85 - 0.32);
     comet.sparkFreq = 32 / quality; if (isHighQuality) comet.sparkFreq = 8;
     comet.sparkLife = 320; comet.sparkLifeVariation = 3;
     if (this.glitter === 'willow' || this.fallingLeaves) { comet.sparkFreq = 20 / quality; comet.sparkSpeed = 0.5; comet.sparkLife = 500; }
