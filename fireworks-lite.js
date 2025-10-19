@@ -15,7 +15,7 @@ const IS_HIGH_END_DEVICE = (() => {
 const MAX_WIDTH = 7680;
 const MAX_HEIGHT = 4320;
 const GRAVITY = 0.9;
-let simSpeed = 1; // fixed speed (no UI to change)
+let simSpeed = 1;
 
 function getDefaultScaleFactor() {
   if (IS_MOBILE) return 0.9;
@@ -57,13 +57,11 @@ const trailsStage = new Stage('trails-canvas');
 const mainStage = new Stage('main-canvas');
 const stages = [trailsStage, mainStage];
 
-// Minimal DOM nodes used by engine
 const appNodes = {
   stageContainer: document.querySelector('.stage-container'),
   canvasContainer: document.querySelector('.canvas-container')
 };
 
-// Static config (no UI)
 const config = {
   quality: IS_HIGH_END_DEVICE ? QUALITY_HIGH : QUALITY_NORMAL,
   shell: 'Random',
@@ -88,8 +86,6 @@ function configDidUpdate() {
   }
   Spark.drawWidth = quality === QUALITY_HIGH ? 0.75 : 1;
 }
-
-// Defer applying config until after Spark is defined (called in init()).
 
 // Color helpers
 const COLOR_NAMES = Object.keys(COLOR);
@@ -129,7 +125,7 @@ function makePistilColor(shellColor) {
   return (shellColor === COLOR.White || shellColor === COLOR.Gold) ? randomColor({ notColor: shellColor }) : whiteOrGold();
 }
 
-// Shell factories (subset retained to preserve variety)
+// Shell factories
 const crysanthemumShell = (size = 1) => {
   const glitter = Math.random() < 0.25;
   const singleColor = Math.random() < 0.72;
@@ -342,7 +338,6 @@ function fitShellPositionInBoundsH(position) {
   return (1 - edge * 2) * position + edge;
 }
 function fitShellPositionInBoundsV(position) { return position * 1.5; }
-// Note: direct random H/V helpers removed (unused).
 
 function getRandomShellSize() {
   const baseSize = shellSizeSelector();
@@ -364,8 +359,6 @@ function seqRandomShell() {
   if (shell.fallingLeaves) extraDelay = 4600;
   return 900 + Math.random() * 600 + extraDelay;
 }
-
-// Note: seqRandomFastShell removed (finale mode removed).
 
 function seqTwoRandom() {
   const size1 = getRandomShellSize();
@@ -563,7 +556,7 @@ const Star = {
 };
 
 const Spark = {
-  drawWidth: 1, // overridden by configDidUpdate
+  drawWidth: 1,
   airDrag: 0.9,
   active: createParticleCollection(),
   _pool: [],
