@@ -105,10 +105,7 @@ function randomColorSimple() {
 }
 
 let lastColor;
-function randomColor(options) {
-  const notSame = options && options.notSame;
-  const notColor = options && options.notColor;
-  const limitWhite = options && options.limitWhite;
+function randomColor({ notSame = false, notColor = null, limitWhite = false } = {}) {
   let color = randomColorSimple();
   if (limitWhite && color === COLOR.White && Math.random() < 0.6) color = randomColorSimple();
   if (notSame) {
@@ -155,7 +152,7 @@ const crysanthemumShell = (size = 1) => {
 const ghostShell = (size = 1) => {
   const shell = crysanthemumShell(size);
   shell.starLife *= 1.5;
-  let ghostColor = randomColor({ notColor: COLOR.White });
+  const ghostColor = randomColor({ notColor: COLOR.White });
   shell.streamers = true;
   const pistil = Math.random() < 0.42;
   const pistilColor = pistil && makePistilColor(ghostColor);
@@ -399,7 +396,7 @@ function seqPyramid() {
 
   function launchShell(x, isCenter) {
     const isRandom = shellNameSelector() === 'Random';
-    let shellType = isRandom ? (isCenter ? randomSpecialShell : randomMainShell) : shellTypes[shellNameSelector()];
+    const shellType = isRandom ? (isCenter ? randomSpecialShell : randomMainShell) : shellTypes[shellNameSelector()];
     const shell = new Shell(shellType(shellSize));
     const height = (Math.cos(x * 5 * Math.PI + PI_HALF) + 1) / 2;
     shell.launch(x, height * 0.75);
@@ -430,7 +427,7 @@ function seqSmallBarrage() {
 
   function launchShell(x, useSpecial) {
     const isRandom = shellNameSelector() === 'Random';
-    let shellType = isRandom ? (useSpecial ? randomSpecialShell : randomMainShell) : shellTypes[shellNameSelector()];
+    const shellType = isRandom ? (useSpecial ? randomSpecialShell : randomMainShell) : shellTypes[shellNameSelector()];
     const shell = new Shell(shellType(shellSize));
     const height = (Math.cos(x * 5 * Math.PI + PI_HALF) + 1) / 2;
     shell.launch(x, height * 0.75);
@@ -455,7 +452,7 @@ function seqSmallBarrage() {
 seqSmallBarrage.cooldown = 15000;
 seqSmallBarrage.lastCalled = Date.now();
 
-const sequences = [seqRandomShell, seqTwoRandom, seqTriple, seqPyramid, seqSmallBarrage];
+// Removed unused `sequences` array (not referenced)
 
 let isFirstSeq = true;
 function startSequence() {
@@ -688,9 +685,10 @@ class Shell {
 
   burst(x, y) {
     const speed = this.spreadSize / 96;
-    let color, onDeath, sparkFreq, sparkSpeed, sparkLife; let sparkLifeVariation = 0.25; let playedDeathSound = false; // sound removed
-    if (this.crossette) onDeath = (star) => { if (!playedDeathSound) { playedDeathSound = true; } crossetteEffect(star); };
-    if (this.crackle) onDeath = (star) => { if (!playedDeathSound) { playedDeathSound = true; } crackleEffect(star); };
+    let color, onDeath, sparkFreq, sparkSpeed, sparkLife; let sparkLifeVariation = 0.25;
+    // Directly assign effect handlers; previously wrapped only to gate a removed sound.
+    if (this.crossette) onDeath = crossetteEffect;
+    if (this.crackle) onDeath = crackleEffect;
     if (this.floral) onDeath = floralEffect;
     if (this.fallingLeaves) onDeath = fallingLeavesEffect;
 
@@ -702,7 +700,7 @@ class Shell {
     else if (this.glitter === 'willow') { sparkFreq = 120; sparkSpeed = 0.34; sparkLife = 1400; sparkLifeVariation = 3.8; }
     sparkFreq = sparkFreq / quality;
 
-    let firstStar = true;
+    // firstStar was unused; removed
     const starFactory = (angle, speedMult) => {
       const standardInitialSpeed = this.spreadSize / 1800;
       const star = Star.add(
@@ -781,7 +779,6 @@ class Shell {
 
 // Update and render
 function update(frameTime, lag) {
-  const width = stageW; const height = stageH;
   const timeStep = frameTime * simSpeed; const speed = simSpeed * lag;
   updateGlobals(timeStep, lag);
   const starDrag = 1 - (1 - Star.airDrag) * speed;
