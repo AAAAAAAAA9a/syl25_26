@@ -56,25 +56,18 @@
         mix-blend-mode: lighten;
         transform: translateZ(0);
       }
-      /* Hide app UI from the fireworks demo */
-      #fireworks .controls,
-      #fireworks .menu,
-      #fireworks .help-modal,
-      #fireworks .loading-init { display: none !important; }
+      /* No UI for fireworks in lite build */
     </style>
   </head>
   <body class="bg-midnight font-body text-slate-100 antialiased">
     <!-- Fireworks background (behind card) -->
     <div id="fireworks" aria-hidden="true">
-      <div class="loading-init">
-        <div class="loading-init__header">Loading</div>
-        <div class="loading-init__status">Preparing...</div>
-      </div>
       <div class="stage-container">
         <div class="canvas-container">
           <canvas id="trails-canvas"></canvas>
           <canvas id="main-canvas"></canvas>
         </div>
+      </div>
         <!-- Minimal controls/menu markup for script expectations -->
         <div class="controls">
           <div class="btn pause-btn"><svg width="24" height="24"><use href="#icon-pause" xlink:href="#icon-pause"></use></svg></div>
@@ -169,7 +162,7 @@
     <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/fscreen%401.0.1.js'></script>
     <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/Stage%400.1.4.js'></script>
     <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/MyMath.js'></script>
-    <script src="firework-show/script.js"></script>
+    <script src="fireworks-lite.js"></script>
   
     <script>
       const DATA_URL = "https://jsonblob.com/api/jsonBlob/1429230376525684736";
